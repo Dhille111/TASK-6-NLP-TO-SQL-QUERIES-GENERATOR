@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQLify - Natural Language to SQL Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M12 3c-4.97 0-9 1.79-9 4s4.03 4 9 4 9-1.79 9-4-4.03-4-9-4zm0 6c-3.87 0-7-1.12-7-2s3.13-2 7-2 7 1.12 7 2-3.13 2-7 2zm0 3c-4.97 0-9 1.79-9 4s4.03 4 9 4 9-1.79 9-4-4.03-4-9-4zm0 6c-3.87 0-7-1.12-7-2s3.13-2 7-2 7 1.12 7 2-3.13 2-7 2zm0 3c-4.97 0-9 1.79-9 4s4.03 4 9 4 9-1.79 9-4-4.03-4-9-4zm0 6c-3.87 0-7-1.12-7-2s3.13-2 7-2 7 1.12 7 2-3.13 2-7 2z"/>
+        </svg>
+      </div>
+      <div>
+        <h1>SQLify</h1>
+      </div>
+    </div>
+
+    <div class="controls-group">
+      <div class="custom-select">
+        <select id="db-selector" title="Select Database">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+      
+      <button class="btn" id="custom-db-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+        </svg>
+        Custom DB
+      </button>
+
+      <button class="btn btn-icon-only" id="settings-btn" title="Gemini Settings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <main class="dashboard-grid">
+    
+    <!-- LEFT PANEL: SCHEMA EXPLORER -->
+    <aside class="panel schema-explorer">
+      <div class="panel-header">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724C2.307 10.63 3.282 10 5 10c.057 0 .114.002.17.005-.183.33-.314.717-.314 1.159c0 .762.307 1.452.8 1.954l-.014.002a.261.261 0 0 1-.22-.002zM4 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM1.5 3a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/>
+          </svg>
+          Schema Tables
+        </h2>
+      </div>
+      <div class="panel-body">
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="schema-search" placeholder="Search tables or columns...">
+        </div>
+        <div class="table-list" id="table-list-container">
+          <!-- Tables cards rendered dynamically -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT CONTAINER -->
+    <div class="workspace-container">
+      
+      <!-- NLP SEARCH CARD -->
+      <section class="panel nlp-input-section">
+        <div class="nlp-textarea-wrapper">
+          <textarea id="nlp-query-input" placeholder="Ask a question in natural language (e.g. 'Show me the average salary of employees in each department')"></textarea>
+          <button class="nlp-submit-btn" id="generate-btn" title="Generate SQL Query">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+        <div class="nlp-suggestions" id="suggestions-container">
+          <span class="suggestion-label">Suggestions:</span>
+          <!-- Suggestions rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- CODE SPLIT: EDITOR AND EXPLAINER -->
+      <div class="code-split">
+        <section class="panel sql-console">
+          <div class="editor-header">
+            <span class="editor-title">SQL Query Console</span>
+            <div style="display: flex; gap: 0.5rem;">
+              <span id="llm-badge" class="table-badge" style="background: rgba(6, 182, 212, 0.1); color: var(--color-cyan); display: none;">LLM Mode</span>
+              <span id="heuristic-badge" class="table-badge" style="background: rgba(168, 85, 247, 0.1); color: var(--color-purple);">Local Parser</span>
+            </div>
+          </div>
+          <div class="editor-wrapper">
+            <textarea class="editor-textarea" id="sql-editor" placeholder="Write or edit SQL queries here..."></textarea>
+            <div class="console-actions">
+              <button class="btn btn-primary" id="run-query-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
+                </svg>
+                Execute Query
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- RESULTS TABS CONTAINER -->
+      <section class="panel" style="flex: 1;">
+        <div class="tabs-header">
+          <button class="tab-btn active" data-tab="results-tab">Query Output</button>
+          <button class="tab-btn" data-tab="explanation-tab">SQL Explanation</button>
+          <button class="tab-btn" data-tab="erd-tab">Visual Schema (ERD)</button>
+        </div>
+        
+        <div class="panel-body" id="tabs-content-container">
+          
+          <!-- TAB 1: RESULTS TABLE -->
+          <div class="tab-content active" id="results-tab">
+            <div class="table-responsive" id="table-results-wrapper">
+              <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <p>Run a query or ask a question to visualize outputs.</p>
+              </div>
+            </div>
+            
+            <div class="query-stats" id="query-stats-bar" style="display: none;">
+              <div class="stat-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                <span>Execution Time: <strong id="exec-time">0 ms</strong></span>
+              </div>
+              <div class="stat-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1V2h-1v1zm4-2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1V2h-1v1zm4-2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1V2h-1v1zM1.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1V7h-1v1zm4-2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1V7h-1v1zm4-2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1V7h-1v1zM1.5 11a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1v-1h-1v1zm4-2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1v-1h-1v1zm4-2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm1 2h1v-1h-1v1z"/>
+                </svg>
+                <span>Rows Returned: <strong id="row-count">0</strong></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- TAB 2: EXPLANATION BLOCK -->
+          <div class="tab-content" id="explanation-tab">
+            <div class="explanation-block" id="explanation-container">
+              <h3>SQL Query Interpretation</h3>
+              <p id="explanation-text">No queries generated yet. Ask a question to analyze its logic.</p>
+            </div>
+          </div>
+          
+          <!-- TAB 3: VISUAL RELATIONSHIPS (ERD) -->
+          <div class="tab-content" id="erd-tab">
+            <div class="erd-container" id="erd-container-wrapper">
+              <!-- Replaced dynamically by schema mapping -->
+            </div>
+          </div>
+          
+        </div>
+      </section>
+      
+    </div>
+  </main>
+
+  <!-- MODAL: SETTINGS -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Gemini LLM Integration</h3>
+        <button class="modal-close" id="settings-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+          Connect the analyzer to Gemini API to translate arbitrary questions and schemas. If left empty, SQLify will use the local rule-based matching engine.
+        </p>
+        <div class="form-group">
+          <label for="api-key-input">Gemini API Key</label>
+          <input type="password" id="api-key-input" placeholder="AIzaSy...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="settings-cancel">Cancel</button>
+        <button class="btn btn-primary" id="settings-save">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CUSTOM DATABASE -->
+  <div class="modal-overlay" id="custom-db-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Create Custom Database</h3>
+        <button class="modal-close" id="custom-db-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.5;">
+          Paste a DDL/DML script containing table creations (`CREATE TABLE`) and insertions (`INSERT INTO`) to create your custom database schema.
+        </p>
+        <div class="form-group">
+          <label for="custom-sql-script">SQL Script</label>
+          <textarea id="custom-sql-script" placeholder="CREATE TABLE books (
+  book_id INTEGER PRIMARY KEY,
+  title TEXT,
+  author TEXT,
+  price REAL
+);
+
+INSERT INTO books VALUES (1, '1984', 'George Orwell', 9.99);
+INSERT INTO books VALUES (2, 'The Great Gatsby', 'F. Scott Fitzgerald', 12.50);"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="custom-db-cancel">Cancel</button>
+        <button class="btn btn-primary" id="custom-db-submit">Create Database</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
