@@ -83,3 +83,11 @@ Expected output:
 Ran 7 tests in 0.225s
 OK
 ```
+## output images
+<img width="1920" height="1448" alt="image" src="https://github.com/user-attachments/assets/c6b0ca12-a55c-4982-a32d-30ef34371d8e" />
+<img width="1920" height="878" alt="image" src="https://github.com/user-attachments/assets/e75dcc99-1a62-45bb-b972-241d8824f22f" />
+
+
+<img width="1920" height="1796" alt="image" src="https://github.com/user-attachments/assets/74dd7a72-88b7-4e32-a133-59fe7ab75f66" />
+
+
